@@ -6,18 +6,18 @@
 #define BLACK_TEXT  "\033[30m"        // Texto preto
 #define WHITE_TEXT  "\033[37m"        // Texto branco
 
-// Função para imprimir o tabuleiro de xadrez com peças
+// FunÃ§Ã£o para imprimir o tabuleiro de xadrez com peÃ§as
 void printBoard() {
-    // Representação das peças
+    // RepresentaÃ§Ã£o das peÃ§as
     char board[8][8] = {
-        {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}, // Peças pretas
-        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'}, // Peões pretos
+        {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}, // PeÃ§as pretas
+        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'}, // PeÃµes pretos
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
         {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
-        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // Peões brancos
-        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}  // Peças brancas
+        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // PeÃµes brancos
+        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}  // PeÃ§as brancas
     };
 
 	int i, j;
@@ -30,17 +30,17 @@ void printBoard() {
                 printf(DARK_GRAY);    // Casa escura
             }
 
-            // Adicionar peça com cor de texto apropriada
+            // Adicionar peÃ§a com cor de texto apropriada
             if (board[i][j] != ' ') {
                 if (board[i][j] >= 'a') {
-                    printf(BLACK_TEXT " %c " RESET, board[i][j]); // Peças pretas
+                    printf(BLACK_TEXT " %c " RESET, board[i][j]); // PeÃ§as pretas
                 } else {
-                    printf(WHITE_TEXT " %c " RESET, board[i][j]); // Peças brancas
+                    printf(WHITE_TEXT " %c " RESET, board[i][j]); // PeÃ§as brancas
                 }
             } else {
-                printf("   "); // Espaço vazio
+                printf("   "); // EspaÃ§o vazio
             }
         }
-        printf(RESET "\n"); // Resetar cores após cada linha
+        printf(RESET "\n"); // Resetar cores apÃ³s cada linha
     }
 }
