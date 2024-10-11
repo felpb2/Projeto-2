@@ -1,69 +1,52 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-typedef struct teste{
-	char nome[50];
-	char senha[10];
-	char nome_jogo[50];
-	int pontuacao;
+#define RESET       "\033[0m"
+#define LIGHT_GRAY  "\033[48;5;248m" // Fundo cinza claro
+#define DARK_GRAY   "\033[48;5;22m" // Fundo cinza escuro
+#define BLACK_TEXT  "\033[30m"        // Texto preto
+#define WHITE_TEXT  "\033[37m"        // Texto branco
 
-} Usuarios;
+// Função para imprimir o tabuleiro de xadrez com peças
+void printBoard() {
+    // Representação das peças
+    char board[8][8] = {
+        {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}, // Peças pretas
+        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'}, // Peões pretos
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
+        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Casa vazia
+        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // Peões brancos
+        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}  // Peças brancas
+    };
 
+	int i, j;
+    for ( i = 0; i < 8; i++) {
+        for ( j = 0; j < 8; j++) {
+            // Alternar entre as cores de fundo
+            if ((i + j) % 2 == 0) {
+                printf(LIGHT_GRAY);  // Casa clara
+            } else {
+                printf(DARK_GRAY);    // Casa escura
+            }
 
-int lendo(){
-	printf("Lendo arquivo!!\n");
-	return 0;
+            // Adicionar peça com cor de texto apropriada
+            if (board[i][j] != ' ') {
+                if (board[i][j] >= 'a') {
+                    printf(BLACK_TEXT " %c " RESET, board[i][j]); // Peças pretas
+                } else {
+                    printf(WHITE_TEXT " %c " RESET, board[i][j]); // Peças brancas
+                }
+            } else {
+                printf("   "); // Espaço vazio
+            }
+        }
+        printf(RESET "\n"); // Resetar cores após cada linha
+    }
 }
 
-int main(int argc, char *argv[]){
-
-	Usuarios *info;
-    info = malloc(25*sizeof(Usuarios));
-    
-	int tamanho_info = lendo(info);
-	int escolha, i;
-
-	/*
-	int index_players[3];
-	// menu login / cadastro
-	for(i = 0; i < tamanho_info; i++){ //prototipo leitura
-		printf("%s, %s, %s, %d\n", info[i].nome, info[i].nome_jogo, info[i].senha, info[i].pontuacao);
-	}
-	*/
-
-	for(i = 0; i < 3; i++){
-		escolha = 1;
-		while(escolha){
-            printf("Oque desejam fazer?: \n");
-			printf("|----------------------|\n");
-			printf("|         Login        |\n");
-			printf("|----------------------|\n");
-			printf("|1 --> Cadastrar       |\n");
-			printf("|2 --> Login           |\n");
-			printf("|3 --> Fechar          |\n");
-			printf("|----------------------|\n");
-			scanf("%d",&escolha);
-            getchar();
-		    switch (escolha){
-		        case 1:
-					printf("Hello World!!\n");
-					break;
-				case 2:
-					if(!tamanho_info){
-						printf("Hello World!!\n");
-						break;
-					}
-					printf("Hello World!!\n");
-					break;
-				case 3:
-					printf("Saindo\n");
-					return 0;
-				default:
-					printf("Opção inválida!!!\n");
-			}
-		}
-	}
-
-	return 0;
+int main() {
+    printBoard();
+    system("pause");
+    return 0;
 }
