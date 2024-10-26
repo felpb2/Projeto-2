@@ -29,7 +29,7 @@ gcc -o projeto main.c biblioteca.a
 ## Modo de execução:
 bash e powershell
 ```
-.\projeto
+./projeto
 ```
 ## Explicação sobre a forma de uso do programa:
 
