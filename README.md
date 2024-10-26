@@ -26,6 +26,11 @@ gcc -o movimentos.o -c movimentos.c
 ar rcs biblioteca.a *.o
 gcc -o projeto main.c biblioteca.a
 ```
+## Modo de execução:
+bash e powershell
+```
+.\projeto
+```
 ## Explicação sobre a forma de uso do programa:
 
 Ao ser executado o programa apresenta aos usuários um menu inicial, permitindo que escolham entre cadastrar um novo usuário, logar com dois usuários existentes ou fechar o programa.
