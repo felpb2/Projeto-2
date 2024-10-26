@@ -1,0 +1,12 @@
+rafel;123;rafel;0 
+rafael;1234;rafael;0 
+aaaa;12345;aaaa;0 
+mauri;123456;mauri;0 
+abc;2345;acd;0 
+abcde;234;abcde;0 
+xyz;345;xyz;0 
+asd;123;asd;0 
+qwerty;123;qwerty;0 
+felipe;12345;fef;0 
+asdf;1234;asdf;0 
+fei;123;fei;0 
