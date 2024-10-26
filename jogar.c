@@ -1,192 +1,162 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "funcoes.h"
 
-typedef struct {
-	char tipo;
-	int cor; // -1 = nada, 0 = branco, 1 = preto
-	int ataqueB; // ataqueB > 0 casa atacada por uma peca branca
-	int ataqueP; // ataqueP > 0 casa atacada por uma peca preta
-} Peca;
-
-// 'T' = torre
-// 'C' = cavalo
-// 'B' = bispo
-// 'Q' = rainha
-// 'R' = rei
-// 'P' = peao
-// '0' = nada
-
-// tipo[8][8] = {
-// {'T','C','B','Q','R','B','C','T'},
-// {'P','P','P','P','P','P','P','P'},
-// {'0','0','0','0','0','0','0','0'},
-// {'0','0','0','0','0','0','0','0'},
-// {'0','0','0','0','0','0','0','0'},
-// {'0','0','0','0','0','0','0','0'},
-// {'P','P','P','P','P','P','P','P'},
-// {'T','C','B','Q','R','B','C','T'}
-// };
-
-// cor[8][8] = {
-// { 1, 1, 1, 1, 1, 1, 1, 1},
-// { 1, 1, 1, 1, 1, 1, 1, 1},
-// {-1,-1,-1,-1,-1,-1,-1,-1},
-// {-1,-1,-1,-1,-1,-1,-1,-1},
-// {-1,-1,-1,-1,-1,-1,-1,-1},
-// {-1,-1,-1,-1,-1,-1,-1,-1},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0}
-// };
-
-// ataqueP[8][8] = {
-// { 0, 1, 1, 1, 1, 1, 1, 0},
-// { 1, 1, 1, 4, 4, 1, 1, 1},
-// { 2, 2, 3, 2, 2, 3, 2, 2},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0}
-// };
-
-// ataqueB[8][8] = {
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 0, 0, 0, 0, 0, 0, 0, 0},
-// { 2, 2, 3, 2, 2, 3, 2, 2},
-// { 1, 1, 1, 4, 4, 1, 1, 1},
-// { 0, 1, 1, 1, 1, 1, 1, 0}
-// };
-
-// movimentos:
-// bispo[i], i +ou- 7k, i +ou- 9k, k = int
-// peao[i], i + 8 ou captura = i + 7 ou i + 9
-// torre[i], i + 8k, ou i + k,  0 <= i +ou- k < 8, k = int
-// rainha[i],  bispo[i] + torre[i];
-// cavalo[i], i +ou- 6, i +ou- 10, i +ou- 15, i +ou- 17
-
-void capturar(Peca (*tabuleiro)[8], int linha, int coluna){
-    int i, *index;
-    if(tabuleiro[linha][coluna].cor) index = &tabuleiro[linha][coluna].ataqueP;
-    else index = &tabuleiro[linha][coluna].ataqueB;
-    // index = armazena o endereço de ataqueB/ataqueP para que o 
-    // valor seja alterado corretamente de acordo com a cor
-    if(tabuleiro[linha][coluna].tipo == 'T' || tabuleiro[linha][coluna].tipo == 'Q'){ // torre
-        for(i = linha + 1; i < 8; i++){
-            *(index + (i - linha)*8*sizeof(int)) += 1;
-            if(tabuleiro[i][coluna].tipo != '0') break;
-        }
-        for(i = linha - 1; i >= 0; i--){
-            *(index + (i - linha)*8*sizeof(int)) += 1;
-            if(tabuleiro[i][coluna].tipo != '0') break;
-        }
-        for(i = coluna + 1; i < 8; i++){
-            *(index + (i - coluna)*sizeof(int)) += 1;
-            if(tabuleiro[linha][i].tipo != '0') break;
-        }
-        for(i = coluna - 1; i >= 0; i--){
-            *(index + (i - coluna)*sizeof(int)) += 1;
-            if(tabuleiro[linha][i].tipo != '0') break;
-        }
+int JogadaValida(Peca (*tabuleiro)[8], int (*ataque)[8], int linha1, int linha2, int coluna1, int coluna2, int jogador){
+    system("clear||cls");
+    if(tabuleiro[linha2][coluna2].tipo != '0' &&
+        tabuleiro[linha2][coluna2].cor == tabuleiro[linha1][coluna1].cor) {
+        printf("Falha ao mover a peca: Impossivel capturar peca de mesma cor\n");
+        return 1;
     }
-    if(tabuleiro[linha][coluna].tipo == 'C'){
-        if(linha + 2 < 8 && coluna + 1 < 8) *(index + 17*sizeof(int)) += 1;
-        if(linha + 2 < 8 && coluna - 1 >= 0) *(index + 15*sizeof(int)) += 1;
-        if(linha - 2 >= 0 && coluna + 1 < 8) *(index - 15*sizeof(int)) += 1;
-        if(linha - 2 >= 0 && coluna - 1 >= 0) *(index - 17*sizeof(int)) += 1;
-        if(linha + 1 < 8 && coluna + 2 < 8) *(index + 10*sizeof(int)) += 1;
-        if(linha + 1 < 8 && coluna - 2 >= 0) *(index + 6*sizeof(int)) += 1;
-        if(linha - 1 >= 0 && coluna + 2 < 8) *(index - 6*sizeof(int)) += 1;
-        if(linha - 1 >= 0 && coluna - 2 >= 0) *(index - 10*sizeof(int)) += 1;
+    if(tabuleiro[linha1][coluna1].cor == 0 && jogador == 1 ||
+    tabuleiro[linha1][coluna1].cor == 1 && jogador == 0){
+        printf("Falha ao mover a peca: Peca de cor errada\n");
+        return 1;
     }
-    if(tabuleiro[linha][coluna].tipo == 'B' || tabuleiro[linha][coluna].tipo == 'Q'){ // bispo
-        for(i = 1; linha + i < 8 && coluna + i < 8; i++){
-            *(index + i*9*sizeof(int)) += 1;
-            if(tabuleiro[linha+i][coluna+i].tipo != '0') break;
-        }
-        for(i = 1; linha + i < 8 && coluna - i >= 0; i++){
-            *(index + i*7*sizeof(int)) += 1;
-            if(tabuleiro[linha+i][coluna+i].tipo != '0') break;
-        }
-        for(i = 1; linha - i >= 0 && coluna + i < 8; i++){
-            *(index - i*7*sizeof(int)) += 1;
-            if(tabuleiro[linha+i][coluna+i].tipo != '0') break;
-        }
-        for(i = 1; linha - i >= 0 && coluna - i >= 0; i++){
-            *(index - i*9*sizeof(int)) += 1;
-            if(tabuleiro[linha+i][coluna+i].tipo != '0') break;
-        }
+    if(ataque[linha2][coluna2] == 0 || ataque[linha2][coluna2] == 2){
+        printf("Falha ao mover a peca: Movimento invalido\n");
+        return 1;
     }
-    if(tabuleiro[linha][coluna].tipo == 'R'){ // Rei
-        if(linha + 1 < 8 && coluna + 1 < 8) *(index + 9*sizeof(int)) += 1;
-        if(linha + 1 < 8 && coluna - 1 >= 0) *(index + 7*sizeof(int)) += 1;
-        if(linha - 1 >= 0 && coluna + 1 < 8) *(index - 7*sizeof(int)) += 1;
-        if(linha - 1 >= 0 && coluna - 1 >= 0) *(index - 9*sizeof(int)) += 1;
-        if(linha + 1 < 8) *(index + 8*sizeof(int)) += 1;
-        if(coluna + 1 >= 0) *(index + sizeof(int)) += 1;
-        if(linha - 1 >= 0) *(index - 8*sizeof(int)) += 1;
-        if(coluna - 1 >= 0) *(index - sizeof(int)) += 1;
-    }
-    if(tabuleiro[linha][coluna].tipo == 'P'){ // peao
-        if(tabuleiro[linha][coluna].cor) index = &tabuleiro[linha+1][coluna].ataqueP;
-        else index = &tabuleiro[linha-1][coluna].ataqueB;
-        if(coluna < 7) *(index + sizeof(int)) += 1;
-        if(coluna > 0) *(index - sizeof(int)) += 1;
-    }
+    return 0;
 }
 
-void jogar() {
+void jogar(Usuarios *info, int player1, int player2, int tamanho_info) {
 	Peca tabuleiro[8][8];
-	int i, j;
-	for(i = 0; i < 8; i++){ // tabuleiro na posicao inicial
-		for(j = 0; j < 8; j++){
-			tabuleiro[i][j].ataqueB = 0;
-            tabuleiro[i][j].ataqueP = 0;
-            // cor peca
-			if(i < 2) tabuleiro[i][j].cor = 1;
-			else if(i < 6) tabuleiro[i][j].cor = -1;
-			else tabuleiro[i][j].cor = 0;
-			// tipo peca
-			if(i > 1 && i < 6) tabuleiro[i][j].tipo = '0';
-			else if(i == 1 || i == 6) tabuleiro[i][j].tipo = 'P';
-			else if(i == 0 || i == 7){
-				if(j == 0 || j == 7) tabuleiro[i][j].tipo = 'T';
-				else if(j == 1 || j == 6) tabuleiro[i][j].tipo = 'C';
-				else if(j == 2 || j == 5) tabuleiro[i][j].tipo = 'B';
-				else if(j == 3) tabuleiro[i][j].tipo = 'Q';
-				else if(j == 4) tabuleiro[i][j].tipo = 'R';
-			} 
-		}
-	}
-    
-    for(i = 0; i < 8; i++){
-        for(j = 0; j < 8; j++){
-            if(tabuleiro[i][j].tipo == '0') continue;
-            else capturar(tabuleiro,i,j);
-        }
-    }
+    int i, j, jogador = 0;
+    int linha1, linha2, coluna1, coluna2; // linha/coluna 1 = primeira posicao ; linha/coluna 2 = segunda posicao
+    int ulinha = 0,ucoluna = 0; // ulinha = ultima linha ; ucoluna = ultima coluna
+    int saldo1,saldo2; // pontos ganhos/perdidos na partida
+    int opcao = 0;
+    int ataque[8][8];
+    char posicao_peca[2], lixo[50];
 
-	// for(i = 0; i < 8; i++){
-	// 	for(j = 0; j < 8; j++) printf("%2d,", tabuleiro[i][j].cor);
-	// 	printf("\n");
-	// }
-	// printf("\n");
-	// for(i = 0; i < 8; i++){
-	// 	for(j = 0; j < 8; j++) printf("%2c,", tabuleiro[i][j].tipo);
-	// 	printf("\n");
-	// }
-    // printf("\n");
-    // for(i = 0; i < 8; i++){
-	// 	for(j = 0; j < 8; j++) printf("%2d,", tabuleiro[i][j].ataqueB);
-	// 	printf("\n");
-	// }
-	// printf("\n");
-	// for(i = 0; i < 8; i++){
-	// 	for(j = 0; j < 8; j++) printf("%2d,", tabuleiro[i][j].ataqueP);
-	// 	printf("\n");
-	// }
-    // printf("\n");
+    Peca vazio;
+    
+    vazio.tipo = '0';
+    vazio.cor = -1;
+    vazio.mover = 0;
+    // system("clear||cls");
+    montar_tabuleiro_inicial(tabuleiro);
+    while(1){
+        for(i = 0; i < 8; i++){
+            for(j = 0; j < 8; j++){
+                ataque[i][j] = 0;
+            }
+        }
+        // system("clear||cls");
+        imprimir_tabuleiro(tabuleiro, ataque, jogador, info[player1].nome_jogo, info[player2].nome_jogo);
+        // jogador = 0 = branco = player1
+        // jogador = 1 = preto = player2
+        if(jogador == 0){
+            opcao = tabela_opcoes(info, player1, player2);
+            if(opcao == 1) break;
+            if(opcao == 2) continue;
+        }else{
+            opcao = tabela_opcoes(info, player2, player1);
+            if(opcao == 1) break;
+            if(opcao == 2) continue;
+        }
+        printf("Digite a posicao da peca que voce deseja mover:\n");
+        scanf(" %s", &posicao_peca);
+        getchar();
+        linha1 = (int)posicao_peca[0] - 97;
+        coluna1 = (int)posicao_peca[1] - 49;
+        printf("%d %d\n", linha1, coluna1);
+        if(linha1 > 8 || coluna1 > 8 || linha1 < 0 || coluna1 < 0){
+            system("clear||cls");
+            printf("Erro ao mover a peca\n");
+            printf("Digite qualquer coisa para continuar...\n");
+            scanf("%s", &lixo);
+            continue;
+        }
+        
+        capturar(tabuleiro,linha1,coluna1,ataque,ulinha,ucoluna);
+        
+        // system("clear||cls");
+
+        ataque[linha1][coluna1] = -1;
+        imprimir_tabuleiro(tabuleiro, ataque, jogador, info[player1].nome_jogo, info[player2].nome_jogo);
+
+        printf("Digite a posicao que voce deseja ir com a peca selecionada:\n");
+        scanf(" %s",&posicao_peca);
+        getchar();
+        linha2 = (int)posicao_peca[0] - 97;
+        coluna2 = (int)posicao_peca[1] - 49;
+        
+        if(linha2 > 8 || coluna2 > 8 || linha2 < 0 || coluna2 < 0){
+            system("clear||cls");
+            printf("Erro ao mover a peca\n");
+            printf("Digite qualquer coisa para continuar...\n");
+            scanf("%s", &lixo);
+            continue;
+        }
+        printf("%d %d\n", linha2, coluna2);
+        if(JogadaValida(tabuleiro,ataque,linha1,linha2,coluna1,coluna2,jogador)){
+            printf("Digite qualquer coisa para continuar...\n");
+            scanf("%s", &lixo);
+            continue;
+        }
+        if(tabuleiro[linha2][coluna2].tipo == 'R'){
+            srand(time(NULL));
+            saldo1 = 10 + rand()%11;
+            saldo2 = 10 + rand()%11;
+            printf("+========================+\n");
+            printf("|       Fim de jogo      |\n");
+            if(jogador == 0){
+                criar_historico(info[player1].nome_jogo, info[player2].nome_jogo, "Vitoria", saldo1);
+                criar_historico(info[player2].nome_jogo, info[player1].nome_jogo, "Derrota", saldo2);
+
+                info[player1].pontuacao += saldo1;
+                info[player2].pontuacao -= saldo2;
+                printf("| Vencedor: %12s |\n", info[player1].nome_jogo);
+            } else{
+                criar_historico(info[player2].nome_jogo, info[player1].nome_jogo, "Vitoria", saldo1);
+                criar_historico(info[player1].nome_jogo, info[player2].nome_jogo, "Derrota", saldo2);
+
+                info[player2].pontuacao += saldo2;
+                info[player1].pontuacao -= saldo1;
+                printf("| Vencedor: %12s |\n", info[player2].nome_jogo);
+            }
+            printf("+========================+\n\n");
+            
+            printf("Digite qualquer coisa para continuar...\n");
+            scanf("%s", &lixo);
+            break;
+        }
+        if(ataque[linha2][coluna2] == 1){
+            tabuleiro[linha2][coluna2] = tabuleiro[linha1][coluna1];
+            tabuleiro[linha2][coluna2].mover = tabuleiro[linha1][coluna1].mover + 1;
+            tabuleiro[linha1][coluna1] = vazio;
+        }
+        if(ataque[linha2][coluna2] == 3){
+            tabuleiro[linha2][6] = tabuleiro[linha1][4];
+            tabuleiro[linha2][6].mover = tabuleiro[linha1][4].mover + 1;
+            tabuleiro[linha2][5] = tabuleiro[linha1][7];
+            tabuleiro[linha2][5].mover = tabuleiro[linha1][7].mover + 1;
+            tabuleiro[linha1][4] = vazio;
+            tabuleiro[linha1][7] = vazio;
+        }
+        if(ataque[linha2][coluna2] == 4){
+            tabuleiro[linha2][2] = tabuleiro[linha1][4];
+            tabuleiro[linha2][2].mover = tabuleiro[linha1][4].mover + 1;
+            tabuleiro[linha2][3] = tabuleiro[linha1][0];
+            tabuleiro[linha2][3].mover = tabuleiro[linha1][0].mover + 1;
+            tabuleiro[linha1][4] = vazio;
+            tabuleiro[linha1][0] = vazio;
+        }
+        if(ataque[linha2][coluna2] == 5){
+            tabuleiro[linha2][coluna2] = tabuleiro[linha1][coluna1];
+            tabuleiro[linha2][coluna2].mover = tabuleiro[linha2][coluna2].mover + 1;
+            tabuleiro[linha1][coluna1] = vazio;
+            tabuleiro[ulinha][ucoluna] = vazio;
+        }
+        if(tabuleiro[linha2][coluna2].tipo == 'P'){
+            if((tabuleiro[linha2][coluna2].cor == 1 && linha2 == 7)||
+            (tabuleiro[linha2][coluna2].cor == 0 && linha2 == 0))
+                tabuleiro[linha2][coluna2].tipo = promocao();
+        }
+        ulinha = linha2;
+        ucoluna = coluna2;
+        jogador = 1 - jogador;
+    }
+    atualizar_usuarios(info, tamanho_info);
 }

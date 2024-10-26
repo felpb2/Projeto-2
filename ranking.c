@@ -16,7 +16,7 @@ void ranking(Usuarios *info, int tamanho, int p1, int p2){
 	
 	system("clear||cls");
 	printf("+===================================================+\n");
-	printf("|                    -- RANKING --                  |\n");
+	printf("|                   -- RANKING --                   |\n");
 	printf("+===================================================+\n");
 	for (i = 0; i < tamanho; i++) {
 		printf("| ");
@@ -35,5 +35,5 @@ void ranking(Usuarios *info, int tamanho, int p1, int p2){
 	printf("+===================================================+\n\n");
 	
 	printf("Digite qualquer coisa para continuar...\n");
-	scanf("%s", &lixo);           
+	scanf("%s", &lixo);
 }
